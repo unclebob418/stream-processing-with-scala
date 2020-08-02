@@ -6,6 +6,8 @@ import zio.stream._
 import java.nio.file.Path
 import java.io.IOException
 
+import zio.console.{ getStrLn, putStrLn, Console }
+
 object StreamTypes {
   // 1. A stream that emits integers and cannot fail.
 
@@ -24,27 +26,27 @@ object ConstructingStreams {
   // streams.
 
   // 1. Construct a stream with a single integer, '42'.
-  val single: ??? = ???
+  val single: ZStream[Any, Nothing, Int] = ZStream.fromChunk(Chunk(42))
 
   // 2. Construct a stream with three characters, 'a', 'b', 'c'.
-  val chars: ??? = ???
+  val chars: ZStream[Any, Nothing, Char] = ZStream.fromChunk(Chunk('a', 'b', 'c'))
 
   // 3. Construct a stream from an effect that reads a line from the user.
-  val readLine: ??? = ???
+  val readLine: ZStream[Console, IOException, String] = ZStream.fromEffect(getStrLn)
 
   // 4. Construct a stream that fails with the string "boom".
-  val failed: ??? = ???
+  val failed: ZStream[Any, String, Nothing] = ZStream.fromEffect(ZIO.fail("boom"))
 
   // 5. Create a stream that extracts the Clock from the environment.
-  val clockStream: ZStream[???, ???, Clock] = ???
+  val clockStream: ZStream[clock.Clock, Nothing, Clock] = ZStream.fromEffect(ZIO.accessM[Clock])
 
   // 6. Construct a stream from an existing list of numbers:
-  val ns: List[Int] = List.fill(100)(1)
-  val nStream: ???  = ???
+  val ns: List[Int]                       = List.fill(100)(1)
+  val nStream: ZStream[Any, Nothing, Int] = ZStream.fromIterable(ns)
 
   // 7. Using repeatEffectOption, repeatedly read lines from the user
   // until the string "EOF" is entered.
-  val allLines: ??? = ???
+  val allLines = ZStream.repeatEffectOption(readLine)
 
   // 8. Drain an iterator using `repeatEffectOption`.
   def drainIterator[A](iterator: Iterator[A]): ZStream[???, ???, A] =

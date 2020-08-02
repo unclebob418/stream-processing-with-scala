@@ -2,6 +2,7 @@ package streams.workshop
 
 import zio._
 import zio.console.putStrLn
+import zio.clock._
 import zio.duration._
 import java.nio.channels.AsynchronousFileChannel
 import java.nio.file.Paths
@@ -20,24 +21,24 @@ object Types {
   // correspond to the various ZIO signatures.
 
   // 1. A program that will succeed with an `A` or fail with an `E`.
-  type FailOrSuccess[E, A] = ???
+  type FailOrSuccess[E, A] = IO[E, A]
 
   // 2. A program that if it terminates, yields an `A`.
-  type Success[A] = ???
+  type Success[A] = UIO[A]
 
   // 3. A program that never terminates or fails.
-  type Forever = ???
+  type Forever = UIO[Nothing]
 
   // 4. A program that never terminates, but can fail with a throwable.
-  type MightThrow = ???
+  type MightThrow = IO[Throwable, Nothing]
 
   // 5. A program that requires access to a Clock, can fail with a throwable
   // and succeeds with an `A`.
-  type Program[A] = ???
+  type Program[A] = ZIO[Clock, Throwable, A]
 
   // 6. A program that requires access to blocking IO and the console,
   // could fail with a list of throwables or a number, and never terminates.
-  type Last = ???
+  type Last = ZIO[blocking.Blocking with console.Console, Either[List[Throwable], Int], Nothing]
 }
 
 object Values {
@@ -45,7 +46,7 @@ object Values {
   // we will survey the essential ZIO constructors.
 
   // 1. A program that succeeds with the string "Hello".
-  val hello: ??? = ???
+  val hello: UIO[String] = ZIO.succeed("Hello")
 
   // 2. A program that fails with the string "Boom".
   val boom: ??? = ???
